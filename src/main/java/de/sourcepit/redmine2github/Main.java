@@ -1,7 +1,17 @@
 /*
- * Copyright (c) 2014 Sourcepit.org contributors and others. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright 2014 Bernd Vogt and others.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package de.sourcepit.redmine2github;
@@ -108,7 +118,6 @@ public final class Main
       // clientBuilder.setDefaultRequestConfig(config)
       final CloseableHttpClient httpClient = clientBuilder.build();
 
-
       HttpHost redmine = new HttpHost(redmineURL.getHost(), redmineURL.getPort(), redmineURL.getProtocol());
       HttpHost github = new HttpHost(githubURL.getHost(), githubURL.getPort(), githubURL.getProtocol());
 
@@ -129,7 +138,8 @@ public final class Main
          users.put(Integer.valueOf(3), "berndv");
          users.put(Integer.valueOf(51), "u3r");
 
-         // Map<Integer, Integer> versionMapping = new HashMap<Integer, Integer>();
+         // Map<Integer, Integer> versionMapping = new HashMap<Integer,
+         // Integer>();
          Map<Integer, Integer> versionMapping = migrateVersions(httpClient, redmine, github, context, projectId);
 
          final List<JsonObject> issues = requestIssues(httpClient, redmine, projectId);
@@ -205,11 +215,9 @@ public final class Main
                   "body",
                   "This issue was generated during the project migration from Redmine to GitHub. Its only a dummy to keep issue numbers of both systems in sync.");
 
-
             dummy.addProperty("state", "Dummy to keep Redmine and Github issue numbers in sync (" + current + ")");
 
             dummy = createIssue(httpClient, github, context, dummy);
-
 
             int nr = dummy.getAsJsonPrimitive("number").getAsInt();
             close(httpClient, github, context, nr);
@@ -314,7 +322,7 @@ public final class Main
       {
          System.err.println("Failed to convert : " + textile);
          e.printStackTrace();
-         
+
          return textile;
       }
    }
@@ -404,7 +412,6 @@ public final class Main
          closeQuietly(response);
       }
    }
-
 
    private List<String> extractLabels(List<JsonObject> requestIssues)
    {

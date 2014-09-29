@@ -1,23 +1,27 @@
 /*
- * Copyright (c) 2014 Sourcepit.org contributors and others. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright 2014 Bernd Vogt and others.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package de.sourcepit.redmine2github;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.MessageFormat;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.sourcepit.common.utils.path.PathMatcher;
 
 public class MainTest
 {
@@ -29,4 +33,26 @@ public class MainTest
       assertEquals("`hallo`", new Pandoc().toMarkdown(textile));
    }
 
+   @Test
+   public void testToRegex() throws Exception
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append("/*\n");
+      sb.append(" * Copyright dddd Sourcepit.org and others.\n");
+      sb.append(" * \n");
+      sb.append(" * Licensed under the Apache License, Version 2.0 (the \"License\");\n");
+      sb.append(" * you may not use this file except in compliance with the License.\n");
+      sb.append(" * You may obtain a copy of the License at\n");
+      sb.append(" * \n");
+      sb.append(" * http://www.apache.org/licenses/LICENSE-2.0\n");
+      sb.append(" * \n");
+      sb.append(" * Unless required by applicable law or agreed to in writing, software\n");
+      sb.append(" * distributed under the License is distributed on an \"AS IS\" BASIS,\n");
+      sb.append(" * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n");
+      sb.append(" * See the License for the specific language governing permissions and\n");
+      sb.append(" * limitations under the License.\n");
+      sb.append(" */\n");
+
+      System.out.println(PathMatcher.escRegEx(sb.toString()));
+   }
 }

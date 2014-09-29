@@ -1,7 +1,17 @@
 /*
- * Copyright (c) 2014 Sourcepit.org contributors and others. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright 2014 Bernd Vogt and others.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package de.sourcepit.redmine2github;
@@ -16,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -25,7 +34,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.sourcepit.common.utils.file.FileUtils;
 import org.sourcepit.common.utils.file.FileVisitor;
-import org.sourcepit.common.utils.io.IO;
 
 /**
  * @author Bernd Vogt <bernd.vogt@sourcepit.org>
@@ -37,6 +45,37 @@ public class RemoveHeaders implements FileVisitor
 
    @Option(name = "-c", required = true)
    private String charset;
+
+   private static final String RAW_HEADER;
+
+   private static final String JAVA_HEADER;
+
+   private static final String XML_HEADER;
+
+   static
+   {
+      StringBuilder sb = new StringBuilder();
+
+      sb.append("Copyright 2014 Bernd Vogt and others.\n");
+      sb.append("\n");
+      sb.append("Licensed under the Apache License, Version 2.0 (the \"License\");\n");
+      sb.append("you may not use this file except in compliance with the License.\n");
+      sb.append("You may obtain a copy of the License at\n");
+      sb.append("\n");
+      sb.append("   http://www.apache.org/licenses/LICENSE-2.0\n");
+      sb.append("\n");
+      sb.append("Unless required by applicable law or agreed to in writing, software\n");
+      sb.append("distributed under the License is distributed on an \"AS IS\" BASIS,\n");
+      sb.append("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n");
+      sb.append("See the License for the specific language governing permissions and\n");
+      sb.append("limitations under the License.\n");
+
+      RAW_HEADER = sb.toString();
+
+      JAVA_HEADER = "/*\n" + RAW_HEADER + "*/\n\n";
+
+      XML_HEADER = "<!--\n" + RAW_HEADER + "-->\n";
+   }
 
    public static void main(String[] args) throws CmdLineException
    {
@@ -83,11 +122,20 @@ public class RemoveHeaders implements FileVisitor
 
    private void processXmlFile(File file) throws IOException
    {
+      System.out.println(file);
+
       String content = read(file);
       if (!content.startsWith("<?"))
       {
          System.err.println(file);
-         content = "<?xml version=\"1.0\" encoding=\"" + charset + "\"?>" + nl + content;
+         content = "<?xml version=\"1.0\" encoding=\"" + charset + "\"?>" + nl + XML_HEADER + content;
+         write(file, content);
+      }
+      else
+      {
+         int idx = content.indexOf('<', content.indexOf('\n') + 2);
+         content = "<?xml version=\"1.0\" encoding=\"" + charset + "\"?>" + nl + XML_HEADER
+            + content.substring(idx, content.length());
          write(file, content);
       }
    }
@@ -105,7 +153,7 @@ public class RemoveHeaders implements FileVisitor
       }
       else
       {
-         content = content.substring(idx, content.length());
+         content = JAVA_HEADER + content.substring(idx, content.length());
          write(file, content);
       }
    }

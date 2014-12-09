@@ -133,10 +133,14 @@ public class RemoveHeaders implements FileVisitor
       }
       else
       {
-         int idx = content.indexOf('<', content.indexOf('\n') + 2);
-         content = "<?xml version=\"1.0\" encoding=\"" + charset + "\"?>" + nl + XML_HEADER
-            + content.substring(idx, content.length());
-         write(file, content);
+         int firstNL = content.indexOf('\n');
+         if (firstNL > -1)
+         {
+            int idx = content.indexOf('<', firstNL + 2);
+            content = "<?xml version=\"1.0\" encoding=\"" + charset + "\"?>" + nl + XML_HEADER
+               + content.substring(idx, content.length());
+            write(file, content);
+         }
       }
    }
 
